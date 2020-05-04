@@ -1,6 +1,8 @@
-export type Site = 'azlyrics';
+export type SiteName = 'azlyrics';
 
-export type SiteInfo = {
-  id: Site;
-  getArtistSearch: (term: string) => string;
-};
+export interface ISite {
+  id: SiteName;
+  baseUrl: string;
+  resolvePartialUrl(complement: string): string;
+  getArtistSearch(term: string): string;
+}
