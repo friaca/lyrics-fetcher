@@ -11,11 +11,10 @@ const IDs = Object.freeze({
 
 (async () => {
   const artistName = await question({
-    message: 'Qual o nome do artista?',
     name: IDs.artist,
-    type: 'input',
+    message: 'Qual o nome do artista?',
     validate: (input: string) => input.length > 0,
-  });
+  }).then(answer => answer as string);
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -24,16 +23,16 @@ const IDs = Object.freeze({
   const foundArtists = await page.evaluate(() =>
     [...document.querySelectorAll('.panel table.table td a')].map(element => ({
       name: (element as HTMLElement).firstElementChild!.textContent?.trim(),
-      url: element.getAttribute('href'),
+      url: element.getAttribute('href')!,
     }))
   );
 
   const chosenArtist = await question({
-    message: 'Qual desses?',
     name: IDs.artistChoice,
-    choices: foundArtists.map(({ name }) => ({ name })),
     type: 'list',
-  });
-  console.log(chosenArtist);
-  // await page.goto(foundArtists.find(artist => artist.name === chosenArtist)!.url as string);
+    message: 'Qual desses?',
+    choices: foundArtists.map(({ name }) => ({ name })),
+  }).then(answer => foundArtists.find(artist => artist.name === answer)!);
+
+  await page.goto(chosenArtist.url);
 })();
