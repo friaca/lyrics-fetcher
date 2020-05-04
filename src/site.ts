@@ -1,13 +1,19 @@
-import { SiteInfo, Site } from './types/site';
+import { ISite, SiteName } from './types/site';
 
-const sites: Readonly<SiteInfo[]> = [
+const sites: Readonly<ISite[]> = [
   {
     id: 'azlyrics',
+    baseUrl: 'https://www.azlyrics.com',
+    get resolvePartialUrl() {
+      return (complement: string) => {
+        return `${this.baseUrl}${complement.substring(2)}`;
+      };
+    },
     getArtistSearch: (term: string): string =>
       `https://search.azlyrics.com/search.php?q=${term.split(' ').join('+')}&w=artists&p=1`,
   },
 ];
 
-const getSite = (name: Site) => sites.find(site => site.id === name) as SiteInfo;
+const getSite = (name: SiteName) => sites.find(site => site.id === name) as ISite;
 
 export default getSite;
