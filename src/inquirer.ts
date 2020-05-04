@@ -6,16 +6,18 @@ const DEFAULT_PROMPT: DistinctQuestion = {
   message: '',
 };
 
-export default function questionUser(question: DistinctQuestion) {
-  return inquirer.prompt([{ ...DEFAULT_PROMPT, ...question }]).then(answers => {
+export default function questionUser(
+  question: DistinctQuestion
+): Promise<string | { [k: string]: string }> {
+  return inquirer.prompt([{ ...DEFAULT_PROMPT, ...question }]).then(dirtyAnswers => {
     switch (question.type) {
       case 'input':
       case 'list':
-        return answers[question.name as string];
+        return dirtyAnswers[question.name as string];
       case 'checkbox':
-        return answers;
+        return dirtyAnswers;
       default:
-        return answers;
+        return dirtyAnswers;
     }
   });
 }
