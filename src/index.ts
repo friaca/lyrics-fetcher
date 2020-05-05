@@ -42,7 +42,7 @@ const IDs = Object.freeze({
 
   const artistAlbums = await page.evaluate(() => {
     /* 
-      Reliable way of getting album list from AZLyrircs as from 04/05/2020
+      Reliable way of getting album list from AZLyrircs as of 04/05/2020
     */
 
     const children = [...document.querySelector('#listAlbum')!.children].filter(
