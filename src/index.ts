@@ -94,7 +94,7 @@ const IDs = Object.freeze({
 
   for await (const album of chosenAlbums) {
     const spinner = ora(`Downloading songs' lyrics from ${album.name}`).start();
-    const folder = sanitize(`./${album.name}`);
+    const folder = sanitize(`./lyrics/${album.name}`);
 
     if (!existsSync(folder)) {
       mkdirSync(folder);
