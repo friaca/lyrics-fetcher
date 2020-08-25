@@ -7,5 +7,5 @@ const DEFAULT_PROMPT: DistinctQuestion = {
 };
 
 export default function questionUser(question: DistinctQuestion): Promise<{ [k: string]: string }> {
-  return inquirer.prompt([{ ...DEFAULT_PROMPT, ...question }]).then(dirtyAnswers => dirtyAnswers);
+  return inquirer.prompt([{ ...DEFAULT_PROMPT, ...question }])
 }
