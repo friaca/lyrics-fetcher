@@ -18,7 +18,7 @@ const IDs = Object.freeze({
 (async () => {
   const artistName = await question({
     name: IDs.artist,
-    message: 'Qual o nome do artista?',
+    message: `What's the artist's name?`,
     validate: (input: string) => input.length > 0,
   }).then(answer => answer[IDs.artist]);
 
@@ -41,7 +41,7 @@ const IDs = Object.freeze({
   const chosenArtist = foundArtists.length === 1 ? foundArtists[0] : await question({
     name: IDs.artistChoice,
     type: 'list',
-    message: 'Qual desses?',
+    message: 'Which one?',
     choices: foundArtists.map(({ name }) => ({ name })),
   }).then(answer => foundArtists.find(artist => artist.name === answer[IDs.artistChoice])!);
 
@@ -86,7 +86,7 @@ const IDs = Object.freeze({
   const chosenAlbums = await question({
     name: IDs.albumsChoice,
     type: 'checkbox',
-    message: 'Quais deseja baixar?',
+    message: 'Choose the ones to download',
     choices: artistAlbums.map(({ name }) => ({ name }))
   }).then(albumNames => {
     return artistAlbums.filter(album => albumNames[IDs.albumsChoice].includes(album.name))
