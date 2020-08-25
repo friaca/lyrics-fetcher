@@ -1,13 +1,18 @@
 import puppeteer from 'puppeteer';
 import question from './inquirer';
+import ora from 'ora';
 import getSite from './site';
+import { sanitize } from './utils';
 import { Album } from './types/music';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { disconnect } from 'process';
 
 const DEFAULT_SITE = getSite('azlyrics');
 
 const IDs = Object.freeze({
   artist: 'artistName',
   artistChoice: 'artistChoice',
+  albumsChoice: 'albumsChoice'
 });
 
 (async () => {
@@ -19,10 +24,7 @@ const IDs = Object.freeze({
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  console.log(DEFAULT_SITE.getArtistSearch(artistName));
-  await page.goto(
-    `https://search.azlyrics.com/search.php?q=${artistName.split(' ').join('+')}&w=artists&p=1`
-  );
+  await page.goto(DEFAULT_SITE.getArtistSearch(artistName));
 
   const foundArtists = await page.evaluate(() =>
     [...document.querySelectorAll('.panel table.table td a')].map(element => ({
@@ -31,7 +33,12 @@ const IDs = Object.freeze({
     }))
   );
 
-  const chosenArtist = await question({
+  if (!foundArtists.length) {
+    console.log(`Couldn't find an artist with the name ${artistName}`);
+    process.exit(1);
+  }
+  
+  const chosenArtist = foundArtists.length === 1 ? foundArtists[0] : await question({
     name: IDs.artistChoice,
     type: 'list',
     message: 'Qual desses?',
@@ -75,4 +82,40 @@ const IDs = Object.freeze({
 
     return discography;
   });
+
+  const chosenAlbums = await question({
+    name: IDs.albumsChoice,
+    type: 'checkbox',
+    message: 'Quais deseja baixar?',
+    choices: artistAlbums.map(({ name }) => ({ name }))
+  }).then(albumNames => {
+    return artistAlbums.filter(album => albumNames[IDs.albumsChoice].includes(album.name))
+  })
+
+  for await (const album of chosenAlbums) {
+    const spinner = ora(`Downloading songs' lyrics from ${album.name}`).start();
+    const folder = sanitize(`./${album.name}`);
+
+    if (!existsSync(folder)) {
+      mkdirSync(folder);
+    }
+
+    for await (const song of album.songs) {
+      await page.goto(DEFAULT_SITE.resolvePartialUrl(song.url));
+    
+      const lyrics = await page.evaluate(
+        () =>
+          [...document.querySelector('.col-xs-12.col-lg-8.text-center')!.children]
+            .find(child => child.className === '' && child.nodeName === 'DIV')
+            ?.textContent?.trim() as string
+      );
+
+      writeFileSync(`${folder}/${song.name}.txt`, lyrics);
+    }
+
+    spinner.stop();
+  }
+
+  console.log(`Lyrics downloaded succesfully!`);
+  process.exit(0);
 })();
