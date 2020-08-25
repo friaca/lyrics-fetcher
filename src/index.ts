@@ -5,7 +5,6 @@ import getSite from './site';
 import { sanitize } from './utils';
 import { Album } from './types/music';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { disconnect } from 'process';
 
 const DEFAULT_SITE = getSite('azlyrics');
 
@@ -25,7 +24,7 @@ const IDs = Object.freeze({
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(DEFAULT_SITE.getArtistSearch(artistName));
-
+  
   const foundArtists = await page.evaluate(() =>
     [...document.querySelectorAll('.panel table.table td a')].map(element => ({
       name: (element as HTMLElement).firstElementChild!.textContent?.trim(),
