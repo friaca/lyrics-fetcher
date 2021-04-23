@@ -6,7 +6,7 @@ import { Album, Artist } from '../src/types/music';
 const htmlFolder = path.join(path.resolve(__dirname), 'mocks');
 
 describe('parsing html', () => {
-  const artistSearchHtml = fs.readFileSync(path.join(htmlFolder, 'artist-page.html'));
+  const artistSearchHtml = fs.readFileSync(path.join(htmlFolder, 'artist-search-page.html'));
   const dom = new JSDOM(artistSearchHtml);
   const querySelector = (selector: string) => dom.window.document.querySelector(selector);
   const querySelectorAll = (selector: string) => [...dom.window.document.querySelectorAll(selector)];
