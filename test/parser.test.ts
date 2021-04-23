@@ -1,18 +1,29 @@
 import fs from 'fs';
 import path from 'path';
 import { JSDOM } from 'jsdom';
+import { Album, Artist } from '../src/types/music';
 
 const htmlFolder = path.join(path.resolve(__dirname), 'mocks');
 
-test('parses a number into a string', () => {
-  expect((2).toString()).toBe('2');
-});
+describe('parsing html', () => {
+  const artistSearchHtml = fs.readFileSync(path.join(htmlFolder, 'artist-page.html'));
+  const dom = new JSDOM(artistSearchHtml);
+  const querySelector = (selector: string) => dom.window.document.querySelector(selector);
+  const querySelectorAll = (selector: string) => [...dom.window.document.querySelectorAll(selector)];
 
-test('parses raw html into a dom-like object', () => {
-  const artistHtml = fs.readFileSync(path.join(htmlFolder, 'artist-page.html'));
-  const dom = new JSDOM(artistHtml);
+  it('parses tag selectors', () => {
+    const title = querySelector('title');
+    expect(title.textContent).toBe('AZLyrics - Search: Flume');
+  })
 
-  const title = dom.window.document.querySelector('title');
+  it('parses classes selectors', () => {
+    const selector = '.panel table.table td a';
+    const elements = querySelectorAll(selector);
+    const artists: Artist[] = elements.map(element => ({
+      name: (element as HTMLElement).firstElementChild!.textContent?.trim(),
+      url: element.getAttribute('href'),
+    }));
 
-  expect(title.textContent).toBe('AZLyrics - Search: Flume');
+    expect(artists[0].name).toBe('Flume');
+  })
 });
