@@ -7,3 +7,5 @@ export type Album = {
   name: string;
   songs: Song[];
 };
+
+export type Artist = Song;
