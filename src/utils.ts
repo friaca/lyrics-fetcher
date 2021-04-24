@@ -13,3 +13,10 @@ export const fetch = async (url: string, options?: RequestInit | undefined): Pro
     },
     ...{ options }
   }).then(res => res.text())
+
+export const sleep = async (ms: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve()
+    }, ms)
+  })
