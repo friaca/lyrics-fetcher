@@ -52,7 +52,7 @@ export const fetch = async (url: string, options?: RequestInit | undefined): Pro
     ...{
       method: 'GET',
       headers: {
-        'User-Agent': 
+        'User-Agent': USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)]
       }
     },
     ...{ options }
