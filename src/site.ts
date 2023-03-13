@@ -5,9 +5,7 @@ const sites: Readonly<ISite[]> = [
     id: 'azlyrics',
     baseUrl: 'https://www.azlyrics.com',
     get resolvePartialUrl() {
-      return (complement: string) => {
-        return `${this.baseUrl}${complement.substring(2)}`;
-      };
+      return (complement: string) => `${this.baseUrl}${complement.substring(2)}`
     },
     getArtistSearch: (term: string): string =>
       `https://search.azlyrics.com/search.php?q=${term.split(' ').join('+')}&w=artists&p=1`,
